@@ -360,6 +360,32 @@
     color: white;
     font-size: 1rem;
   }
+  .kb-hint {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    color: #A78BFA;
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    min-height: 18px;
+    letter-spacing: 0.01em;
+  }
+  @media (min-width: 600px) {
+    /* On desktop: larger keys since there's more room */
+    .key {
+      width: 44px;
+      height: 52px;
+      font-size: 1.1rem;
+      border-radius: 12px;
+    }
+    .key-delete {
+      width: 66px;
+    }
+    .key-row {
+      gap: 7px;
+      margin-bottom: 7px;
+    }
+  }
   .key-space {
     width: clamp(80px, 24vw, 120px);
     background: linear-gradient(135deg, var(--sky), #0EA5E9);
@@ -968,6 +994,7 @@
   </div>
 
   <div class="keyboard" id="practiceKeyboard"></div>
+  <div class="kb-hint" id="practiceKbHint"></div>
 
   <button class="btn btn-primary btn-big" onclick="checkAnswer()" style="margin-top:4px">
     ✅ Check My Answer!
@@ -1003,6 +1030,7 @@
   </div>
 
   <div class="keyboard" id="missingKeyboard"></div>
+  <div class="kb-hint" id="missingKbHint"></div>
 </div>
 
 <!-- ===== TIPS SCREEN ===== -->
@@ -1365,6 +1393,66 @@ function startListMode(mode) {
   }
 }
 
+// ========== PHYSICAL KEYBOARD SUPPORT ==========
+// Stores the currently active onKey handler so the physical keyboard
+// can route keystrokes to whichever screen is active.
+let _activeOnKey = null;
+
+document.addEventListener('keydown', (e) => {
+  if (!_activeOnKey) return;
+
+  // Ignore modifier-only keys and keys used for browser shortcuts
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  const key = e.key;
+
+  if (key === 'Backspace') {
+    e.preventDefault();
+    // Highlight the on-screen backspace key briefly
+    flashKey('DELETE');
+    _activeOnKey('DELETE');
+    return;
+  }
+
+  if (key === 'Enter') {
+    e.preventDefault();
+    // Trigger the check button if on practice screen
+    const practiceScreen = document.getElementById('practiceScreen');
+    if (practiceScreen && practiceScreen.classList.contains('active')) {
+      checkAnswer();
+    }
+    return;
+  }
+
+  // Only handle single printable characters (letters + space)
+  if (key.length === 1 && (key.match(/[a-zA-Z]/) || key === ' ')) {
+    e.preventDefault();
+    const upper = key.toUpperCase();
+    flashKey(upper);
+    _activeOnKey(upper);
+  }
+});
+
+function updateKbHint(hintId) {
+  const el = document.getElementById(hintId);
+  if (!el) return;
+  // Show hint only on non-touch / desktop devices
+  const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  el.textContent = isTouch ? '' : '⌨️ You can also type using your keyboard — press Enter to check!';
+}
+
+function flashKey(keyChar) {
+  // Flash the matching on-screen key button for visual feedback
+  const screens = ['practiceKeyboard', 'missingKeyboard'];
+  screens.forEach(id => {
+    const btn = document.getElementById(`key_${id}_${keyChar}`);
+    if (btn) {
+      btn.classList.add('pressed');
+      setTimeout(() => btn.classList.remove('pressed'), 120);
+    }
+  });
+}
+
 // ========== STATE ==========
 let userName = localStorage.getItem('spellingUserName') || '';
 let totalStars = parseInt(localStorage.getItem('spellingStars') || '0');
@@ -1447,6 +1535,10 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  // Disable physical keyboard when not on a game screen
+  if (id !== 'practiceScreen' && id !== 'missingScreen') {
+    _activeOnKey = null;
+  }
 }
 
 function getRandomChar() {
@@ -1714,16 +1806,21 @@ function showPracticeQuestion() {
   const char = getRandomChar();
   setChar('practiceCharEmoji','practiceCharName','practiceCharSpeech', char);
 
-  buildKeyboard('practiceKeyboard', (key) => {
+  const practiceOnKey = (key) => {
     if (key === 'DELETE') {
       currentAnswer = currentAnswer.slice(0, -1);
+    } else if (key === ' ') {
+      currentAnswer += ' ';
     } else {
       currentAnswer += key.toLowerCase();
     }
     document.getElementById('practiceAnswer').textContent = isLowercaseMode()
       ? currentAnswer.toLowerCase()
       : currentAnswer.toUpperCase();
-  });
+  };
+  _activeOnKey = practiceOnKey;
+  buildKeyboard('practiceKeyboard', practiceOnKey);
+  updateKbHint('practiceKbHint');
 
   setTimeout(() => speak(d.word), 500);
 }
@@ -1772,7 +1869,7 @@ function showMissingQuestion() {
   let fillIdx = 0;
   let filledLetters = {};
 
-  buildKeyboard('missingKeyboard', (key) => {
+  const missingOnKey = (key) => {
     if (key === 'DELETE') {
       if (fillIdx > 0) {
         fillIdx--;
@@ -1784,21 +1881,18 @@ function showMissingQuestion() {
       return;
     }
     if (fillIdx >= missingLetters.length) return;
-    
+
     const pos = missingPositions[fillIdx];
     const correct = key.toLowerCase() === missingLetters[fillIdx];
     const box = document.getElementById(`mbox_${pos}`);
     box.textContent = isLowercaseMode() ? key.toLowerCase() : key.toUpperCase();
-    
+
     if (correct) {
       box.className = 'letter-box correct';
       filledLetters[pos] = true;
       fillIdx++;
       if (fillIdx === missingLetters.length) {
-        // All filled correctly!
-        setTimeout(() => {
-          showResult(true, d.word, true);
-        }, 400);
+        setTimeout(() => { showResult(true, d.word, true); }, 400);
       }
     } else {
       box.className = 'letter-box wrong';
@@ -1806,9 +1900,11 @@ function showMissingQuestion() {
         box.textContent = '';
         box.className = 'letter-box hidden';
       }, 500);
-      // Shake all boxes
     }
-  });
+  };
+  _activeOnKey = missingOnKey;
+  buildKeyboard('missingKeyboard', missingOnKey);
+  updateKbHint('missingKbHint');
 
   setTimeout(() => speak(d.word), 500);
 }
