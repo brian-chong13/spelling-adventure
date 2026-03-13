@@ -1462,43 +1462,57 @@ function setChar(emojiId, nameId, speechId, charObj) {
 // ========== SPEECH ==========
 // Known female voice name fragments (covers iOS, macOS, Chrome, Edge, Firefox)
 // ── SPEECH ENGINE ────────────────────────────────────────────────────────────
-// Strategy:
-//   1. Try to find a named female British voice from getVoices()
-//   2. If getVoices() is empty (common on iOS Safari from a URL), fall back to
-//      lang='en-GB' + pitch=1.6 which routes to the device's built-in TTS and
-//      sounds distinctly higher/more feminine on all tested iOS devices.
-//   3. Never block speech waiting for voices — speak immediately with best
-//      available info, using the fallback if needed.
+// Voice priority (based on actual device diagnostic):
+//   1. Any en-GB voice that is NOT Daniel (male)
+//   2. Samantha (en-US) — clearly female, present on all iOS devices
+//   3. Tessa (en-ZA) — female, present on iOS
+//   4. Karen (en-AU) — female, present on iOS
+//   5. Moira (en-IE) — female, present on iOS
+//   6. Any en voice not in the male blocklist
+//   Daniel is explicitly excluded — it is the only en-GB voice on most iPhones
+//   and is male. We never fall back to it.
 
-const FEMALE_HINTS = [
-  'serena','kate','martha','amy','alice','karen','moira','samantha',
-  'victoria','fiona','veena','tessa','google uk english female','zira',
-  'hazel','susan','helen','claire','laura','sophie','charlotte','emily',
-  'female','woman','girl'
+// Explicitly male voices to always exclude
+const MALE_VOICE_NAMES = [
+  'daniel','fred','ralph','albert','junior','thomas','xander',
+  'majed','google uk english male','male','man'
 ];
-const MALE_HINTS = [
-  'daniel','oliver','arthur','james','george','harry','male','man',
-  'google uk english male','david','alex','fred','tom','peter','bruce',
-  'gordon','lee','stewart','ralph'
+
+// Preferred female voices in priority order (names as lowercase)
+const FEMALE_VOICE_PRIORITY = [
+  // en-GB female (not daniel) — best accent match
+  'serena','kate','martha','oliver',
+  // en-US female
+  'samantha','kathy','karen','victoria',
+  // Other English female
+  'tessa','moira',
+  // Generic female hints
+  'google uk english female','female','woman'
 ];
 
 function pickVoice(voices) {
   if (!voices || !voices.length) return null;
-  const isFemale = v => { const n=v.name.toLowerCase(); return !MALE_HINTS.some(m=>n.includes(m)) && FEMALE_HINTS.some(f=>n.includes(f)); };
-  const isMale   = v => MALE_HINTS.some(m=>v.name.toLowerCase().includes(m));
-  const isGB     = v => v.lang.toLowerCase().replace('_','-').startsWith('en-gb');
-  const isEN     = v => v.lang.toLowerCase().startsWith('en');
-  return voices.find(v=>isGB(v)&&isFemale(v))
-      || voices.find(v=>isGB(v)&&!isMale(v))
-      || voices.find(v=>isGB(v))
-      || voices.find(v=>isEN(v)&&isFemale(v))
-      || voices.find(v=>isEN(v)&&!isMale(v))
-      || null;
-}
 
-// Attempt to get voices right now (works on desktop, often empty on iOS)
-function getVoicesNow() {
-  return (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
+  const isMale = v => MALE_VOICE_NAMES.some(m => v.name.toLowerCase().includes(m));
+  const isGB   = v => v.lang.toLowerCase().replace('_','-').startsWith('en-gb');
+  const isEN   = v => v.lang.toLowerCase().startsWith('en');
+
+  // 1. Exact match against our female priority list (in order)
+  for (const name of FEMALE_VOICE_PRIORITY) {
+    const match = voices.find(v => v.name.toLowerCase().includes(name) && !isMale(v));
+    if (match) return match;
+  }
+
+  // 2. Any en-GB voice that isn't male (e.g. future iOS voices)
+  const gbNotMale = voices.find(v => isGB(v) && !isMale(v));
+  if (gbNotMale) return gbNotMale;
+
+  // 3. Any English voice that isn't male
+  const enNotMale = voices.find(v => isEN(v) && !isMale(v));
+  if (enNotMale) return enNotMale;
+
+  // 4. Absolute last resort — any English voice (still better than silence)
+  return voices.find(v => isEN(v)) || null;
 }
 
 // Wait up to maxMs for a non-empty, stable voice list
@@ -1508,7 +1522,6 @@ function getVoicesAsync(maxMs = 3000) {
     if (!synth) { resolve([]); return; }
     let resolved = false;
     const done = v => { if (!resolved) { resolved = true; resolve(v); } };
-
     function stabilise() {
       const a = synth.getVoices();
       setTimeout(() => {
@@ -1517,29 +1530,25 @@ function getVoicesAsync(maxMs = 3000) {
         else setTimeout(stabilise, 200);
       }, 200);
     }
-
-    // Timeout safety net
     setTimeout(() => done(synth.getVoices()), maxMs);
-
     const v0 = synth.getVoices();
     if (v0.length > 0) { stabilise(); return; }
     synth.addEventListener('voiceschanged', function onVC() {
       synth.removeEventListener('voiceschanged', onVC);
       stabilise();
     });
-    // Also poll — iOS doesn't always fire voiceschanged
     setTimeout(stabilise, 300);
   });
 }
 
-// Cached voice — refreshed after first successful load
-let _cachedVoice = undefined; // undefined=unknown, null=use lang fallback
+// Cached voice — undefined = not yet resolved
+let _cachedVoice = undefined;
 
-// Pre-warm on page load (helps desktop; safe no-op on iOS)
+// Pre-warm on page load
 if (window.speechSynthesis) {
   getVoicesAsync(2000).then(vs => {
     const v = pickVoice(vs);
-    if (v) _cachedVoice = v;
+    _cachedVoice = v || null;
   });
 }
 
@@ -1554,12 +1563,9 @@ function speakUtterance(u) {
 
 function makeU(text, voice, rate, pitch) {
   const u = new SpeechSynthesisUtterance(text);
-  // Always set lang — this alone is often enough on iOS to pick en-GB
   u.lang  = 'en-GB';
   u.rate  = rate;
   u.pitch = pitch;
-  // Only assign voice if we have a real named one — do NOT assign null/undefined
-  // as that can override the lang setting and revert to the system default male voice
   if (voice) u.voice = voice;
   return u;
 }
@@ -1568,34 +1574,19 @@ async function speak(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
 
-  let voice = _cachedVoice; // undefined = not yet resolved
-
-  if (voice === undefined) {
-    // First tap — try a quick synchronous read first (works on desktop)
-    const quick = getVoicesNow();
-    if (quick.length > 0) {
-      voice = pickVoice(quick);
-      _cachedVoice = voice || null;
-    } else {
-      // iOS path: voices only available after user gesture — now we're inside one
-      // so getVoices() should return the list immediately or very shortly after
-      const loaded = await getVoicesAsync(1500);
-      voice = pickVoice(loaded);
-      _cachedVoice = voice || null;
-    }
+  if (_cachedVoice === undefined) {
+    const vs = await getVoicesAsync(1500);
+    _cachedVoice = pickVoice(vs) || null;
   }
 
-  // Pitch strategy:
-  //   - Named GB female voice found  → pitch 1.05 (natural)
-  //   - No named voice (iOS fallback) → pitch 1.65 (forces noticeably higher/
-  //     feminine tone on the device's built-in en-GB TTS)
-  const pitch = (voice && voice.lang.toLowerCase().replace('_','-').startsWith('en-gb'))
-    ? 1.05
-    : 1.65;
+  const voice = _cachedVoice;
+  // Samantha/Tessa/Karen/Moira are all natural pitch — no boost needed
+  // Only boost pitch if we got no named voice at all
+  const pitch = voice ? 1.0 : 1.6;
 
-  await speakUtterance(makeU(text, voice || null, 0.65, pitch));
+  await speakUtterance(makeU(text, voice, 0.65, pitch));
   await pause(500);
-  await speakUtterance(makeU(text, voice || null, 0.65, pitch));
+  await speakUtterance(makeU(text, voice, 0.65, pitch));
 }
 
 function speakWord() {
