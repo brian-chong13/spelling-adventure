@@ -836,11 +836,28 @@
     </div>
   </div>
 
-  <div class="tip-card">
+  <div class="tip-card" id="chaseTipCard">
     <h4>🐾 Chase says:</h4>
     <p id="chaseTip">"Every great speller was once a beginner! Let's paw-trol those words together!" 🚒</p>
-    <button class="btn btn-back" style="font-size:0.8rem;padding:8px 16px;align-self:center;margin-top:2px" onclick="resetName()">✏️ Change Name</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+      <button class="btn btn-back" style="font-size:0.8rem;padding:8px 16px" onclick="resetName()">✏️ Change Name</button>
+      <button class="btn btn-back" style="font-size:0.8rem;padding:8px 16px;background:#F0FDF4;color:#166534" onclick="showVoiceDebug()">🔊 Voice Info</button>
+    </div>
 </div>
+</div>
+
+<!-- ===== VOICE DEBUG OVERLAY ===== -->
+<div id="voiceDebugOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;padding:16px;overflow-y:auto">
+  <div style="background:white;border-radius:20px;padding:20px;max-width:480px;margin:0 auto">
+    <h3 style="font-family:'Fredoka One',cursive;color:#E91E8C;margin-bottom:12px">🔊 Voice Diagnostic</h3>
+    <p style="font-size:0.8rem;color:#555;margin-bottom:8px">This shows what voices your device is reporting. Tap "Speak Test" to hear the current selection.</p>
+    <div id="voiceDebugContent" style="font-size:0.75rem;font-family:monospace;background:#F3F4F6;border-radius:12px;padding:12px;margin-bottom:12px;white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow-y:auto">Loading...</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="runVoiceDiagnostic()" style="background:#7C3AED;color:white;border:none;border-radius:50px;padding:10px 18px;font-family:'Fredoka One',cursive;cursor:pointer">🔄 Refresh</button>
+      <button onclick="speakTest()" style="background:#E91E8C;color:white;border:none;border-radius:50px;padding:10px 18px;font-family:'Fredoka One',cursive;cursor:pointer">🔊 Speak Test</button>
+      <button onclick="document.getElementById('voiceDebugOverlay').style.display='none'" style="background:#6B7280;color:white;border:none;border-radius:50px;padding:10px 18px;font-family:'Fredoka One',cursive;cursor:pointer">✕ Close</button>
+    </div>
+  </div>
 </div>
 
 <!-- ===== SPELLING LIST SUB-MENU ===== -->
@@ -1974,6 +1991,40 @@ self.addEventListener('fetch', e => {
   navigator.serviceWorker.register(swUrl, {scope: './'}
   ).then(() => console.log('SW registered')
   ).catch(e => console.log('SW error:', e));
+}
+
+// ========== VOICE DIAGNOSTIC ==========
+function showVoiceDebug() {
+  document.getElementById('voiceDebugOverlay').style.display = 'block';
+  runVoiceDiagnostic();
+}
+
+async function runVoiceDiagnostic() {
+  const el = document.getElementById('voiceDebugContent');
+  el.textContent = 'Fetching voices...';
+
+  // Force a fresh fetch
+  _cachedVoice = undefined;
+  const voices = await getVoicesAsync(3000);
+  const picked = pickVoice(voices);
+
+  let out = '';
+  out += `Device: ${navigator.userAgent.substring(0,80)}\n`;
+  out += `Total voices: ${voices.length}\n`;
+  out += `Selected voice: ${picked ? picked.name + ' (' + picked.lang + ')' : 'NONE — using lang+pitch fallback'}\n`;
+  out += `\n--- All voices ---\n`;
+  voices.forEach((v, i) => {
+    out += `${i+1}. ${v.name} | ${v.lang} | default:${v.default}\n`;
+  });
+  if (voices.length === 0) {
+    out += '(no voices returned — this is the iOS URL restriction)\n';
+    out += 'Will use lang=en-GB + pitch=1.65 fallback\n';
+  }
+  el.textContent = out;
+}
+
+async function speakTest() {
+  await speak("hello, I am your spelling teacher");
 }
 </script>
 </body>
