@@ -255,6 +255,29 @@
   }
   .char-name { font-size: 0.75rem; color: var(--deep-pink); font-weight: 800; margin-bottom: 2px; }
 
+  /* ===== COUNTDOWN + STAR PREVIEW ===== */
+  .countdown-wrap {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin: 2px 0 4px;
+  }
+  .countdown-ring-svg { transform: rotate(-90deg); }
+  .countdown-ring-bg  { fill: none; stroke: #EDE9FE; stroke-width: 5; }
+  .countdown-ring-bar {
+    fill: none; stroke-width: 5; stroke-linecap: round;
+    stroke-dasharray: 113.1; stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  }
+  .countdown-number {
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    min-width: 30px; text-align: center; color: var(--deep-pink);
+  }
+  .countdown-number.urgent { color: #EF4444; animation: pulse-num 0.5s ease-in-out infinite alternate; }
+  @keyframes pulse-num { from{transform:scale(1)} to{transform:scale(1.2)} }
+  .star-preview { display:flex; gap:4px; align-items:center; justify-content:center; min-height:24px; }
+  .star-pip { font-size:1.25rem; filter:grayscale(0.6) opacity(0.4); transition: filter 0.3s, transform 0.2s; }
+  .star-pip.lit { filter:none; transform:scale(1.1); }
+  .result-stars-row { display:flex; gap:4px; justify-content:center; min-height:34px; margin: 6px 0 2px; }
+
   .word-display {
     background: linear-gradient(135deg, #FFF0F9, #EDE9FE);
     border-radius: var(--radius);
@@ -973,6 +996,19 @@
     </div>
   </div>
 
+  <div class="countdown-wrap" id="practiceCountdownWrap">
+    <svg class="countdown-ring-svg" width="44" height="44" viewBox="0 0 44 44">
+      <circle class="countdown-ring-bg" cx="22" cy="22" r="18"/>
+      <circle class="countdown-ring-bar" id="practiceRingBar" cx="22" cy="22" r="18" style="stroke:#10B981"/>
+    </svg>
+    <span class="countdown-number" id="practiceCountNum">30</span>
+    <div class="star-preview" id="practiceStarPreview">
+      <span class="star-pip lit" id="psp0">⭐</span>
+      <span class="star-pip lit" id="psp1">⭐</span>
+      <span class="star-pip lit" id="psp2">⭐</span>
+    </div>
+  </div>
+
   <div class="answer-input-area">
     <span class="answer-text" id="practiceAnswer"></span><span class="cursor-blink"></span>
   </div>
@@ -1013,8 +1049,25 @@
     </div>
   </div>
 
+  <div class="countdown-wrap" id="missingCountdownWrap">
+    <svg class="countdown-ring-svg" width="44" height="44" viewBox="0 0 44 44">
+      <circle class="countdown-ring-bg" cx="22" cy="22" r="18"/>
+      <circle class="countdown-ring-bar" id="missingRingBar" cx="22" cy="22" r="18" style="stroke:#10B981"/>
+    </svg>
+    <span class="countdown-number" id="missingCountNum">20</span>
+    <div class="star-preview" id="missingStarPreview">
+      <span class="star-pip lit" id="msp0">⭐</span>
+      <span class="star-pip lit" id="msp1">⭐</span>
+      <span class="star-pip lit" id="msp2">⭐</span>
+    </div>
+  </div>
+
   <div class="keyboard" id="missingKeyboard"></div>
   <div class="kb-hint" id="missingKbHint"></div>
+
+  <button class="btn btn-primary btn-big" onclick="checkMissingAnswer()" id="missingCheckBtn" style="margin-top:4px">
+    ✅ Check My Answer!
+  </button>
 </div>
 
 <!-- ===== TIPS SCREEN ===== -->
@@ -1041,6 +1094,7 @@
     <span class="result-big-emoji" id="resultEmoji">🎉</span>
     <div class="result-title" id="resultTitle">Correct!</div>
     <div class="result-word-shown" id="resultWord"></div>
+    <div class="result-stars-row" id="resultStarsRow"></div>
     <div class="result-msg" id="resultMsg"></div>
     <button class="btn btn-primary btn-big" onclick="nextQuestion()" id="resultNextBtn">
       Next Word ➡
@@ -1507,8 +1561,8 @@ function goHome() {
 }
 
 function goBackFromGame() {
+  stopCountdown();
   if (activeList) {
-    // came from a spelling list — go back to that list's sub-menu
     showSpellingList(Object.keys(spellingLists).find(k => spellingLists[k] === activeList));
   } else {
     goHome();
@@ -1792,6 +1846,21 @@ function buildKeyboard(containerId, onKey) {
     }
     container.appendChild(rowDiv);
   });
+
+  // Spacebar row
+  const spaceRow = document.createElement('div');
+  spaceRow.className = 'key-row';
+  const spaceKey = document.createElement('button');
+  spaceKey.className = 'key key-space';
+  spaceKey.id = `key_${containerId}_SPACE`;
+  spaceKey.textContent = 'SPACE';
+  spaceKey.onclick = () => {
+    spaceKey.classList.add('pressed');
+    setTimeout(() => spaceKey.classList.remove('pressed'), 100);
+    onKey(' ');
+  };
+  spaceRow.appendChild(spaceKey);
+  container.appendChild(spaceRow);
 }
 
 function showPracticeQuestion() {
@@ -1820,15 +1889,36 @@ function showPracticeQuestion() {
   buildKeyboard('practiceKeyboard', practiceOnKey);
   updateKbHint('practiceKbHint');
 
+  startCountdown('practice', d.word.replace(/ /g, '').length);
+
   setTimeout(() => speak(d.word), 500);
 }
 
 function checkAnswer() {
-  const d = practiceQueue[practiceIdx];
-  // Normalise: lowercase, trim, collapse multiple spaces to one
-  const normalise = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
-  const correct = normalise(currentAnswer) === normalise(d.word);
-  showResult(correct, d.word);
+  try {
+    const d = practiceQueue[practiceIdx];
+    const normalise = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
+    const correct = normalise(currentAnswer) === normalise(d.word);
+    stopCountdown();
+    showResult(correct, d.word);
+  } catch(e) {
+    showDebugError('checkAnswer', e);
+  }
+}
+
+function checkMissingAnswer() {
+  // Called by the Check My Answer button on the missing letters screen.
+  // Reads the current state of the letter boxes to determine correctness.
+  const d = missingQueue[missingIdx];
+  stopCountdown();
+  // Check if all boxes are showing 'correct' class (all blanks filled right)
+  const word = d.word.toLowerCase();
+  let allCorrect = true;
+  for (let i = 0; i < word.length; i++) {
+    const box = document.getElementById('mbox_' + i);
+    if (box && box.classList.contains('hidden')) { allCorrect = false; break; }
+  }
+  showResult(allCorrect, d.word, true);
 }
 
 // ========== MISSING LETTERS ==========
@@ -1894,6 +1984,7 @@ function showMissingQuestion() {
       }
     } else {
       box.className = 'letter-box wrong';
+      registerMiss();
       setTimeout(() => {
         box.textContent = '';
         box.className = 'letter-box hidden';
@@ -1904,38 +1995,164 @@ function showMissingQuestion() {
   buildKeyboard('missingKeyboard', missingOnKey);
   updateKbHint('missingKbHint');
 
+  // Start countdown — 20s for missing letters (fewer characters to type)
+  startCountdown('missing', numHide);
+
   setTimeout(() => speak(d.word), 500);
 }
 
+// ========== COUNTDOWN ENGINE ==========
+let _cdTimer     = null;
+let _cdTotal     = 30;
+let _cdRemaining = 30;
+let _cdMode      = null;
+let _cdMisses    = 0;
+const CIRC       = 2 * Math.PI * 18; // circumference of r=18 ring
+
+function startCountdown(mode, difficulty) {
+  stopCountdown();
+  _cdMode   = mode;
+  _cdMisses = 0;
+
+  // Practice gets 30s base + 2s per letter beyond 4 (longer words need more time)
+  // Missing gets 20s base + 2s per hidden letter beyond 2
+  const base  = mode === 'practice' ? 30 : 20;
+  const bonus = Math.max(0, difficulty - (mode === 'practice' ? 4 : 2)) * 2;
+  _cdTotal     = base + bonus;
+  _cdRemaining = _cdTotal;
+
+  const numId  = mode === 'practice' ? 'practiceCountNum'    : 'missingCountNum';
+  const barId  = mode === 'practice' ? 'practiceRingBar'     : 'missingRingBar';
+  const prefix = mode === 'practice' ? 'psp'                 : 'msp';
+
+  updateCountdownDisplay(numId, barId, prefix, _cdTotal, _cdTotal);
+
+  _cdTimer = setInterval(() => {
+    _cdRemaining--;
+    updateCountdownDisplay(numId, barId, prefix, _cdRemaining, _cdTotal);
+    if (_cdRemaining <= 0) {
+      stopCountdown();
+      if (_cdMode === 'practice') {
+        showResult(false, practiceQueue[practiceIdx].word, false, true);
+      } else {
+        showResult(false, missingQueue[missingIdx].word, true, true);
+      }
+    }
+  }, 1000);
+}
+
+function stopCountdown() {
+  if (_cdTimer) { clearInterval(_cdTimer); _cdTimer = null; }
+}
+
+function registerMiss() {
+  _cdMisses++;
+  updateStarPips(_cdMode === 'practice' ? 'psp' : 'msp', calcStarPreview());
+}
+
+function updateCountdownDisplay(numId, barId, prefix, remaining, total) {
+  const numEl = document.getElementById(numId);
+  const barEl = document.getElementById(barId);
+  if (!numEl || !barEl) return;
+
+  numEl.textContent = Math.max(0, remaining);
+  const pct    = Math.max(0, remaining / total);
+  barEl.style.strokeDashoffset = CIRC * (1 - pct);
+  barEl.style.stroke = pct > 0.5 ? '#10B981' : pct > 0.25 ? '#F59E0B' : '#EF4444';
+  numEl.className = 'countdown-number' + (remaining <= 5 ? ' urgent' : '');
+  updateStarPips(prefix, calcStarPreview());
+}
+
+function calcStarPreview() {
+  const pct  = _cdTotal > 0 ? _cdRemaining / _cdTotal : 0;
+  const base = pct > 0.66 ? 3 : pct > 0.33 ? 2 : 1;
+  return Math.max(0, base - _cdMisses);
+}
+
+function updateStarPips(prefix, litCount) {
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById(prefix + i);
+    if (el) el.className = 'star-pip' + (i < litCount ? ' lit' : '');
+  }
+}
+
 // ========== RESULT ==========
-function showResult(correct, word, isMissing = false) {
-  const overlay = document.getElementById('resultOverlay');
-  const char = getRandomChar();
+function showResult(correct, word, isMissing, timedOut) {
+  try {
+  isMissing = isMissing || false;
+  timedOut  = timedOut  || false;
+  stopCountdown();
+  const overlay  = document.getElementById('resultOverlay');
+  const starsRow = document.getElementById('resultStarsRow');
+  const char     = getRandomChar();
 
   if (correct) {
-    const stars = word.length >= 6 ? 3 : word.length >= 4 ? 2 : 1;
+    const pct  = _cdTotal > 0 ? _cdRemaining / _cdTotal : 0;
+    let stars  = pct > 0.66 ? 3 : pct > 0.33 ? 2 : 1;
+    stars      = Math.max(1, stars - _cdMisses);
+
     sessionStars += stars;
-    totalStars += stars;
+    totalStars   += stars;
     saveStars();
+
+    const titles   = ['Amazing!','Correct!','Superstar!','Brilliant!','You got it!','Spot on!'];
+    const cheers   = ['Well done, ' + (userName||'spelling star') + '!','Keep going!','Fabulous spelling!','Outstanding!'];
+    const speedLbl = pct > 0.66 ? 'Super fast!' : pct > 0.33 ? 'Good pace!' : 'Nice and steady!';
+    const missLbl  = _cdMisses > 0 ? ' (' + _cdMisses + ' miss' + (_cdMisses > 1 ? 'es' : '') + ')' : '';
+
     document.getElementById('resultEmoji').textContent = ['🎉','🌟','🏆','✨','🥳'][Math.floor(Math.random()*5)];
-    document.getElementById('resultTitle').textContent = ['Amazing!','Correct!','Superstar!','Brilliant!','You got it!'][Math.floor(Math.random()*5)];
-    document.getElementById('resultTitle').className = 'result-title correct';
-    document.getElementById('resultWord').textContent = isLowercaseMode() ? word.toLowerCase() : word.toUpperCase();
-    document.getElementById('resultMsg').textContent = `${char.emoji} ${char.name}: +${stars} ⭐ earned! ${['Well done, ' + userName + '!', 'Keep going!', 'You\'re amazing!', 'Fabulous spelling!'][Math.floor(Math.random()*4)]}`;
+    document.getElementById('resultTitle').textContent = titles[Math.floor(Math.random()*titles.length)];
+    document.getElementById('resultTitle').className   = 'result-title correct';
+    document.getElementById('resultWord').textContent  = isLowercaseMode() ? word.toLowerCase() : word.toUpperCase();
+    document.getElementById('resultMsg').textContent   = char.emoji + ' ' + char.name + ': +' + stars + ' stars! ' + speedLbl + missLbl + ' — ' + cheers[Math.floor(Math.random()*cheers.length)];
+
+    starsRow.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const s = document.createElement('span');
+      s.textContent = i < stars ? '⭐' : '☆';
+      s.style.cssText = 'opacity:0;transition:opacity 0.2s ' + (i*0.15) + 's,transform 0.3s ' + (i*0.15) + 's;display:inline-block;transform:scale(0.5);font-size:1.7rem;margin:0 2px';
+      starsRow.appendChild(s);
+      setTimeout(function(el){ return function(){ el.style.opacity='1'; el.style.transform='scale(1)'; }; }(s), 50);
+    }
+
     launchConfetti();
+
   } else {
-    document.getElementById('resultEmoji').textContent = '💪';
-    document.getElementById('resultTitle').textContent = 'Keep trying!';
-    document.getElementById('resultTitle').className = 'result-title wrong';
-    document.getElementById('resultWord').textContent = isLowercaseMode() ? word.toLowerCase() : word.toUpperCase();
-    document.getElementById('resultMsg').textContent = `${char.emoji} ${char.name}: The word is "${word.toUpperCase()}" — you'll get it next time, ${userName || 'spelling star'}! 💕`;
+    const emoji = timedOut ? '⏰' : '💪';
+    const title = timedOut ? "Time's up!" : 'Keep trying!';
+    const shown = isLowercaseMode() ? word.toLowerCase() : word.toUpperCase();
+    const msg   = timedOut
+      ? char.emoji + ' ' + char.name + ': The word was "' + shown + '" — you\'ll get it next time!'
+      : char.emoji + ' ' + char.name + ': The word is "' + shown + '" — you\'ll get it next time, ' + (userName||'spelling star') + '!';
+
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultTitle').className   = 'result-title wrong';
+    document.getElementById('resultWord').textContent  = shown;
+    document.getElementById('resultMsg').textContent   = msg;
+
+    starsRow.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const s = document.createElement('span');
+      s.textContent = '☆';
+      s.style.cssText = 'opacity:0.3;font-size:1.7rem;margin:0 2px';
+      starsRow.appendChild(s);
+    }
   }
 
   overlay.classList.add('show');
+  } catch(e) { showDebugError('showResult', e); }
+}
+
+function showDebugError(fn, e) {
+  const msg = '🐛 JS Error in ' + fn + ':\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,4).join('\n');
+  alert(msg);
+  console.error(fn, e);
 }
 
 function nextQuestion() {
   document.getElementById('resultOverlay').classList.remove('show');
+  _cdMisses = 0;
 
   if (currentMode === 'practice') {
     practiceIdx++;
