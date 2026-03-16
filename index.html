@@ -2016,7 +2016,7 @@ function startCountdown(mode, difficulty) {
 
   // Practice gets 30s base + 2s per letter beyond 4 (longer words need more time)
   // Missing gets 20s base + 2s per hidden letter beyond 2
-  const base  = mode === 'practice' ? 30 : 20;
+  const base  = mode === 'practice' ? 36 : 24;
   const bonus = Math.max(0, difficulty - (mode === 'practice' ? 4 : 2)) * 2;
   _cdTotal     = base + bonus;
   _cdRemaining = _cdTotal;
