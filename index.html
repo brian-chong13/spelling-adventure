@@ -899,6 +899,14 @@
       </div>
       <div class="test-badge">📅 Mon<br>27 Apr</div>
     </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_dans_lost_hat')" style="margin-top:10px">
+      <span class="mode-icon">🎩</span>
+      <div>
+        <div class="mode-label">Spelling 4: 11 May<br>Unit 8: Dan's Lost Hat</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>11 May</div>
+    </div>
   </div>
 
   <div class="tip-card" id="chaseTipCard">
@@ -1435,6 +1443,23 @@ const spellingLists = {
       { word: "slowly",   category: "Ants In A Hurry 🐜", syllables: "slow-ly",    hint: "Two parts: <span class='letter-highlight'>SLOW</span> + <span class='letter-highlight'>LY</span>. <span class='letter-highlight'>OW</span> makes a long 'oh' sound!" },
       { word: "nibble",   category: "Ants In A Hurry 🐜", syllables: "nib-ble",    hint: "Two parts: <span class='letter-highlight'>NIB</span> + <span class='letter-highlight'>BLE</span>. Double <span class='letter-highlight'>BB</span> in the middle!" },
       { word: "scurry",   category: "Ants In A Hurry 🐜", syllables: "scur-ry",    hint: "Two parts: <span class='letter-highlight'>SCUR</span> + <span class='letter-highlight'>RY</span>. Starts with <span class='letter-highlight'>SC</span> blend, double <span class='letter-highlight'>RR</span>!" },
+    ]
+  },
+
+  list_dans_lost_hat: {
+    title: "🎩 Unit 8: Dan's Lost Hat",
+    date:  'Mon 11 May',
+    words: [
+      { word: "whiskers",   category: "Dan's Lost Hat 🎩", syllables: "whis-kers",    hint: "Two parts: <span class='letter-highlight'>WHIS</span> + <span class='letter-highlight'>KERS</span>. Starts with <span class='letter-highlight'>WH</span> blend!" },
+      { word: "wags",       category: "Dan's Lost Hat 🎩", syllables: "wags",         hint: "Short and simple! Short <span class='letter-highlight'>A</span> in the middle. Ends with <span class='letter-highlight'>GS</span>!" },
+      { word: "stare",      category: "Dan's Lost Hat 🎩", syllables: "stare",        hint: "Starts with <span class='letter-highlight'>ST</span> blend. Magic <span class='letter-highlight'>E</span> at the end makes the A say its name!" },
+      { word: "return",     category: "Dan's Lost Hat 🎩", syllables: "re-turn",      hint: "Two parts: <span class='letter-highlight'>RE</span> + <span class='letter-highlight'>TURN</span>. <span class='letter-highlight'>RE</span> at the start means doing something again!" },
+      { word: "stroll",     category: "Dan's Lost Hat 🎩", syllables: "stroll",       hint: "Starts with <span class='letter-highlight'>STR</span> blend. Double <span class='letter-highlight'>LL</span> at the end!" },
+      { word: "creeps",     category: "Dan's Lost Hat 🎩", syllables: "creeps",       hint: "Starts with <span class='letter-highlight'>CR</span> blend. <span class='letter-highlight'>EE</span> in the middle makes a long 'ee' sound!" },
+      { word: "seconds",    category: "Dan's Lost Hat 🎩", syllables: "sec-onds",     hint: "Two parts: <span class='letter-highlight'>SEC</span> + <span class='letter-highlight'>ONDS</span>. Ends with <span class='letter-highlight'>NDS</span> cluster!" },
+      { word: "zoom",       category: "Dan's Lost Hat 🎩", syllables: "zoom",         hint: "Double <span class='letter-highlight'>OO</span> in the middle makes a long 'oo' sound. Ends with <span class='letter-highlight'>M</span>!" },
+      { word: "flat",       category: "Dan's Lost Hat 🎩", syllables: "flat",         hint: "Starts with <span class='letter-highlight'>FL</span> blend. Short <span class='letter-highlight'>A</span> in the middle!" },
+      { word: "everywhere", category: "Dan's Lost Hat 🎩", syllables: "eve-ry-where", hint: "Three parts: <span class='letter-highlight'>EVE</span> + <span class='letter-highlight'>RY</span> + <span class='letter-highlight'>WHERE</span>. Longer word — break it up!" },
     ]
   }
 };
@@ -2233,7 +2258,11 @@ function showComplete() {
 }
 
 function playAgain() {
-  startMode(currentMode);
+  if (activeList) {
+    startListMode(currentMode);
+  } else {
+    startMode(currentMode);
+  }
 }
 
 // ========== TIPS ==========
