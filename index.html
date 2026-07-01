@@ -763,6 +763,29 @@
     line-height: 1.3;
   }
 
+  /* ===== ARCHIVE (SEMESTER 1) ===== */
+  .archive-toggle {
+    width: 100%;
+    background: #F3E8FF;
+    color: #7C3AED;
+    border: 3px dashed var(--lavender);
+    border-radius: 20px;
+    padding: 12px 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin: 14px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .archive-toggle:active { transform: scale(0.97); }
+  .archive-arrow { display: inline-block; transition: transform 0.2s; }
+  .archive-arrow.open { transform: rotate(180deg); }
+  .archive-content { margin-top: 10px; }
+
   /* ===== SPELLING LIST SUB-MENU ===== */
   .sublist-words {
     display: flex;
@@ -875,6 +898,36 @@
   </div>
 
   <div class="mode-grid" style="margin-top:0">
+    <div class="mode-card full-width" onclick="showSpellingList('list_baby_sister')">
+      <span class="mode-icon">👶</span>
+      <div>
+        <div class="mode-label">Spelling 5: 13 July<br>Unit 9: When My Baby Sister Came Home</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>13 Jul</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_mid_autumn')" style="margin-top:10px">
+      <span class="mode-icon">🏮</span>
+      <div>
+        <div class="mode-label">Spelling 6: 27 July<br>Unit 10: Mid-Autumn Festival</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>27 Jul</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_hari_raya')" style="margin-top:10px">
+      <span class="mode-icon">🌙</span>
+      <div>
+        <div class="mode-label">Spelling 7: 17 Aug<br>Unit 11: The First Day of Hari Raya</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>17 Aug</div>
+    </div>
+  </div>
+
+  <button class="archive-toggle" id="archiveToggleBtn" onclick="toggleArchive()">
+    📁 Semester 1 Units (Before June) <span class="archive-arrow" id="archiveArrow">▼</span>
+  </button>
+  <div class="mode-grid archive-content" id="archiveContent" style="display:none">
     <div class="mode-card full-width" onclick="showSpellingList('list_croc_tea')">
       <span class="mode-icon">🐊</span>
       <div>
@@ -906,30 +959,6 @@
         <div class="mode-desc">10 test words — practice now!</div>
       </div>
       <div class="test-badge">📅 Mon<br>11 May</div>
-    </div>
-    <div class="mode-card full-width" onclick="showSpellingList('list_baby_sister')" style="margin-top:10px">
-      <span class="mode-icon">👶</span>
-      <div>
-        <div class="mode-label">Spelling 5: 13 July<br>Unit 9: When My Baby Sister Came Home</div>
-        <div class="mode-desc">10 test words — practice now!</div>
-      </div>
-      <div class="test-badge">📅 Mon<br>13 Jul</div>
-    </div>
-    <div class="mode-card full-width" onclick="showSpellingList('list_mid_autumn')" style="margin-top:10px">
-      <span class="mode-icon">🏮</span>
-      <div>
-        <div class="mode-label">Spelling 6: 27 July<br>Unit 10: Mid-Autumn Festival</div>
-        <div class="mode-desc">10 test words — practice now!</div>
-      </div>
-      <div class="test-badge">📅 Mon<br>27 Jul</div>
-    </div>
-    <div class="mode-card full-width" onclick="showSpellingList('list_hari_raya')" style="margin-top:10px">
-      <span class="mode-icon">🌙</span>
-      <div>
-        <div class="mode-label">Spelling 7: 17 Aug<br>Unit 11: The First Day of Hari Raya</div>
-        <div class="mode-desc">10 test words — practice now!</div>
-      </div>
-      <div class="test-badge">📅 Mon<br>17 Aug</div>
     </div>
   </div>
 
@@ -1541,6 +1570,14 @@ const spellingLists = {
 
 let activeList = null;   // the current spelling list object
 let activeWordSet = null; // wordData or a list's words array
+
+function toggleArchive() {
+  const content = document.getElementById('archiveContent');
+  const arrow = document.getElementById('archiveArrow');
+  const isOpen = content.style.display !== 'none';
+  content.style.display = isOpen ? 'none' : 'grid';
+  arrow.classList.toggle('open', !isOpen);
+}
 
 function showSpellingList(listKey) {
   activeList = spellingLists[listKey];
@@ -2404,51 +2441,4 @@ if (userName) {
   };
   const blob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
   const url = URL.createObjectURL(blob);
-  document.getElementById('pwaManifest').setAttribute('href', url);
-})();
-
-// ========== PWA: SERVICE WORKER (offline support) ==========
-if ('serviceWorker' in navigator) {
-  // Inline the service worker as a blob so no separate file is needed
-  const swCode = `
-const CACHE = 'spelling-adventure-v1';
-const OFFLINE_URL = self.location.href;
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(cache => cache.add(OFFLINE_URL))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', e => {
-  if (e.request.mode === 'navigate') {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match(OFFLINE_URL))
-    );
-  } else {
-    e.respondWith(
-      caches.match(e.request).then(r => r || fetch(e.request))
-    );
-  }
-});
-  `;
-  const swBlob = new Blob([swCode], {type: 'application/javascript'});
-  const swUrl = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl, {scope: './'}
-  ).then(() => console.log('SW registered')
-  ).catch(e => console.log('SW error:', e));
-}
-
-</script>
-</body>
-</html>
+  document.getElementById('pwaMan
