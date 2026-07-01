@@ -907,6 +907,30 @@
       </div>
       <div class="test-badge">📅 Mon<br>11 May</div>
     </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_baby_sister')" style="margin-top:10px">
+      <span class="mode-icon">👶</span>
+      <div>
+        <div class="mode-label">Spelling 5: 13 July<br>Unit 9: When My Baby Sister Came Home</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>13 Jul</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_mid_autumn')" style="margin-top:10px">
+      <span class="mode-icon">🏮</span>
+      <div>
+        <div class="mode-label">Spelling 6: 27 July<br>Unit 10: Mid-Autumn Festival</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>27 Jul</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_hari_raya')" style="margin-top:10px">
+      <span class="mode-icon">🌙</span>
+      <div>
+        <div class="mode-label">Spelling 7: 17 Aug<br>Unit 11: The First Day of Hari Raya</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>17 Aug</div>
+    </div>
   </div>
 
   <div class="tip-card" id="chaseTipCard">
@@ -1460,6 +1484,57 @@ const spellingLists = {
       { word: "zoom",       category: "Dan's Lost Hat 🎩", syllables: "zoom",         hint: "Double <span class='letter-highlight'>OO</span> in the middle makes a long 'oo' sound. Ends with <span class='letter-highlight'>M</span>!" },
       { word: "flat",       category: "Dan's Lost Hat 🎩", syllables: "flat",         hint: "Starts with <span class='letter-highlight'>FL</span> blend. Short <span class='letter-highlight'>A</span> in the middle!" },
       { word: "everywhere", category: "Dan's Lost Hat 🎩", syllables: "eve-ry-where", hint: "Three parts: <span class='letter-highlight'>EVE</span> + <span class='letter-highlight'>RY</span> + <span class='letter-highlight'>WHERE</span>. Longer word — break it up!" },
+    ]
+  },
+
+  list_baby_sister: {
+    title: "👶 Unit 9: When My Baby Sister Came Home",
+    date: 'Mon 13 Jul',
+    words: [
+      { word: "cousins",    category: "Baby Sister 👶", syllables: "cous-ins",    hint: "Two parts: <span class='letter-highlight'>COUS</span> + <span class='letter-highlight'>INS</span>. The <span class='letter-highlight'>OU</span> makes a short 'uh' sound!" },
+      { word: "fuss",       category: "Baby Sister 👶", syllables: "fuss",        hint: "Short <span class='letter-highlight'>U</span> in the middle. Double <span class='letter-highlight'>SS</span> at the end!" },
+      { word: "favourite",  category: "Baby Sister 👶", syllables: "fa-vour-ite", hint: "Three parts: <span class='letter-highlight'>FA</span> + <span class='letter-highlight'>VOUR</span> + <span class='letter-highlight'>ITE</span>. British spelling has <span class='letter-highlight'>OUR</span> in the middle!" },
+      { word: "delicious",  category: "Baby Sister 👶", syllables: "de-li-cious", hint: "Three parts: <span class='letter-highlight'>DE</span> + <span class='letter-highlight'>LI</span> + <span class='letter-highlight'>CIOUS</span>. Ends with <span class='letter-highlight'>CIOUS</span> — sounds like 'shus'!" },
+      { word: "restaurant", category: "Baby Sister 👶", syllables: "res-tau-rant", hint: "Three parts: <span class='letter-highlight'>RES</span> + <span class='letter-highlight'>TAU</span> + <span class='letter-highlight'>RANT</span>. Tricky <span class='letter-highlight'>AU</span> in the middle!" },
+      { word: "nonsense",   category: "Baby Sister 👶", syllables: "non-sense",   hint: "Two parts: <span class='letter-highlight'>NON</span> + <span class='letter-highlight'>SENSE</span>. Ends with <span class='letter-highlight'>SE</span>, not 'ce'!" },
+      { word: "cried",      category: "Baby Sister 👶", syllables: "cried",      hint: "Starts with <span class='letter-highlight'>CR</span> blend. The <span class='letter-highlight'>Y</span> in 'cry' changes to <span class='letter-highlight'>IED</span> when you add ED!" },
+      { word: "carried",    category: "Baby Sister 👶", syllables: "car-ried",   hint: "Two parts: <span class='letter-highlight'>CAR</span> + <span class='letter-highlight'>RIED</span>. The <span class='letter-highlight'>Y</span> in 'carry' changes to I before adding ED!" },
+      { word: "ordered",    category: "Baby Sister 👶", syllables: "or-dered",   hint: "Two parts: <span class='letter-highlight'>OR</span> + <span class='letter-highlight'>DERED</span>. Just 'order' with <span class='letter-highlight'>ED</span> added!" },
+      { word: "feed",       category: "Baby Sister 👶", syllables: "feed",       hint: "Double <span class='letter-highlight'>EE</span> in the middle makes a long 'ee' sound. Ends with D!" },
+    ]
+  },
+
+  list_mid_autumn: {
+    title: "🏮 Unit 10: Mid-Autumn Festival",
+    date: 'Mon 27 Jul',
+    words: [
+      { word: "festivals",  category: "Mid-Autumn Festival 🏮", syllables: "fes-ti-vals",  hint: "Three parts: <span class='letter-highlight'>FES</span> + <span class='letter-highlight'>TI</span> + <span class='letter-highlight'>VALS</span>. Ends with <span class='letter-highlight'>VALS</span> — plural with S!" },
+      { word: "lantern",    category: "Mid-Autumn Festival 🏮", syllables: "lan-tern",     hint: "Two parts: <span class='letter-highlight'>LAN</span> + <span class='letter-highlight'>TERN</span>. <span class='letter-highlight'>ER</span> makes an 'er' sound!" },
+      { word: "mooncake",   category: "Mid-Autumn Festival 🏮", syllables: "moon-cake",    hint: "Two parts: <span class='letter-highlight'>MOON</span> + <span class='letter-highlight'>CAKE</span>. Double <span class='letter-highlight'>OO</span>, then Magic E in CAKE!" },
+      { word: "dumplings",  category: "Mid-Autumn Festival 🏮", syllables: "dump-lings",   hint: "Two parts: <span class='letter-highlight'>DUMP</span> + <span class='letter-highlight'>LINGS</span>. Ends with <span class='letter-highlight'>INGS</span> — plural of 'dumpling'!" },
+      { word: "bazaar",     category: "Mid-Autumn Festival 🏮", syllables: "ba-zaar",      hint: "Two parts: <span class='letter-highlight'>BA</span> + <span class='letter-highlight'>ZAAR</span>. Double <span class='letter-highlight'>AA</span> — an unusual pattern!" },
+      { word: "bought",     category: "Mid-Autumn Festival 🏮", syllables: "bought",       hint: "Tricky word! <span class='letter-highlight'>OUGH</span> makes an 'or' sound — mostly silent letters!" },
+      { word: "celebrate",  category: "Mid-Autumn Festival 🏮", syllables: "cel-e-brate",  hint: "Three parts: <span class='letter-highlight'>CEL</span> + <span class='letter-highlight'>E</span> + <span class='letter-highlight'>BRATE</span>. The <span class='letter-highlight'>C</span> makes a soft 's' sound before E!" },
+      { word: "price",      category: "Mid-Autumn Festival 🏮", syllables: "price",        hint: "Starts with <span class='letter-highlight'>PR</span> blend. Magic <span class='letter-highlight'>E</span> at the end makes the I say its name!" },
+      { word: "street",     category: "Mid-Autumn Festival 🏮", syllables: "street",       hint: "Starts with <span class='letter-highlight'>STR</span> blend. Double <span class='letter-highlight'>EE</span> makes a long 'ee' sound!" },
+      { word: "egg yolk",   category: "Mid-Autumn Festival 🏮", syllables: "egg yolk",     hint: "Two words — remember the <span class='letter-highlight'>space</span>! Double <span class='letter-highlight'>GG</span> in egg, silent <span class='letter-highlight'>L</span> in yolk!" },
+    ]
+  },
+
+  list_hari_raya: {
+    title: "🌙 Unit 11: The First Day of Hari Raya",
+    date: 'Mon 17 Aug',
+    words: [
+      { word: "breakfast", category: "First Day of Hari Raya 🌙", syllables: "break-fast", hint: "Two parts: <span class='letter-highlight'>BREAK</span> + <span class='letter-highlight'>FAST</span>. <span class='letter-highlight'>EA</span> makes a short 'e' sound here!" },
+      { word: "exchange",  category: "First Day of Hari Raya 🌙", syllables: "ex-change",  hint: "Two parts: <span class='letter-highlight'>EX</span> + <span class='letter-highlight'>CHANGE</span>. <span class='letter-highlight'>CH</span> makes a 'ch' sound, Magic E at the end!" },
+      { word: "clothes",   category: "First Day of Hari Raya 🌙", syllables: "clothes",    hint: "Starts with <span class='letter-highlight'>CL</span> blend. <span class='letter-highlight'>TH</span> makes one sound, silent E at the end!" },
+      { word: "pockets",   category: "First Day of Hari Raya 🌙", syllables: "pock-ets",   hint: "Two parts: <span class='letter-highlight'>POCK</span> + <span class='letter-highlight'>ETS</span>. Ends with <span class='letter-highlight'>CK</span> then ETS!" },
+      { word: "kneel",     category: "First Day of Hari Raya 🌙", syllables: "kneel",      hint: "Silent <span class='letter-highlight'>K</span> at the start! Double <span class='letter-highlight'>EE</span> makes a long 'ee' sound!" },
+      { word: "naughty",   category: "First Day of Hari Raya 🌙", syllables: "naugh-ty",   hint: "Two parts: <span class='letter-highlight'>NAUGH</span> + <span class='letter-highlight'>TY</span>. Tricky <span class='letter-highlight'>AUGH</span> makes an 'or' sound!" },
+      { word: "members",   category: "First Day of Hari Raya 🌙", syllables: "mem-bers",   hint: "Two parts: <span class='letter-highlight'>MEM</span> + <span class='letter-highlight'>BERS</span>. Ends with <span class='letter-highlight'>BERS</span>!" },
+      { word: "visit",     category: "First Day of Hari Raya 🌙", syllables: "vis-it",     hint: "Two parts: <span class='letter-highlight'>VIS</span> + <span class='letter-highlight'>IT</span>. Short <span class='letter-highlight'>I</span> sound in both parts!" },
+      { word: "pineapple", category: "First Day of Hari Raya 🌙", syllables: "pine-ap-ple", hint: "Three parts: <span class='letter-highlight'>PINE</span> + <span class='letter-highlight'>AP</span> + <span class='letter-highlight'>PLE</span>. Magic E in PINE, double <span class='letter-highlight'>PP</span> in APPLE!" },
+      { word: "widely",    category: "First Day of Hari Raya 🌙", syllables: "wide-ly",    hint: "Two parts: <span class='letter-highlight'>WIDE</span> + <span class='letter-highlight'>LY</span>. Magic <span class='letter-highlight'>E</span> makes the I say its name!" },
     ]
   }
 };
