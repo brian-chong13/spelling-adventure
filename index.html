@@ -898,34 +898,34 @@
   </div>
 
   <div class="mode-grid" style="margin-top:0">
-    <div class="mode-card full-width" onclick="showSpellingList('list_baby_sister')">
-      <span class="mode-icon">👶</span>
+    <div class="mode-card full-width" onclick="showSpellingList('list_lazy_duck')">
+      <span class="mode-icon">🦆</span>
       <div>
-        <div class="mode-label">Spelling 5: 13 July<br>Unit 9: When My Baby Sister Came Home</div>
+        <div class="mode-label">Spelling 8: 21 September<br>Unit 12: Lazy Duck</div>
         <div class="mode-desc">10 test words — practice now!</div>
       </div>
-      <div class="test-badge">📅 Mon<br>13 Jul</div>
+      <div class="test-badge">📅 Mon<br>21 Sep</div>
     </div>
-    <div class="mode-card full-width" onclick="showSpellingList('list_mid_autumn')" style="margin-top:10px">
-      <span class="mode-icon">🏮</span>
+    <div class="mode-card full-width" onclick="showSpellingList('list_kings_cake')" style="margin-top:10px">
+      <span class="mode-icon">🎂</span>
       <div>
-        <div class="mode-label">Spelling 6: 27 July<br>Unit 10: Mid-Autumn Festival</div>
+        <div class="mode-label">Spelling 9: 5 October<br>Unit 13: The King's Cake</div>
         <div class="mode-desc">10 test words — practice now!</div>
       </div>
-      <div class="test-badge">📅 Mon<br>27 Jul</div>
+      <div class="test-badge">📅 Mon<br>5 Oct</div>
     </div>
-    <div class="mode-card full-width" onclick="showSpellingList('list_hari_raya')" style="margin-top:10px">
-      <span class="mode-icon">🌙</span>
+    <div class="mode-card full-width" onclick="showSpellingList('list_broken_bangle')" style="margin-top:10px">
+      <span class="mode-icon">💍</span>
       <div>
-        <div class="mode-label">Spelling 7: 17 Aug<br>Unit 11: The First Day of Hari Raya</div>
+        <div class="mode-label">Spelling 10: 19 October<br>Unit 14: The Broken Bangle</div>
         <div class="mode-desc">10 test words — practice now!</div>
       </div>
-      <div class="test-badge">📅 Mon<br>17 Aug</div>
+      <div class="test-badge">📅 Mon<br>19 Oct</div>
     </div>
   </div>
 
   <button class="archive-toggle" id="archiveToggleBtn" onclick="toggleArchive()">
-    📁 Semester 1 Units (Before June) <span class="archive-arrow" id="archiveArrow">▼</span>
+    📁 Past Units <span class="archive-arrow" id="archiveArrow">▼</span>
   </button>
   <div class="mode-grid archive-content" id="archiveContent" style="display:none">
     <div class="mode-card full-width" onclick="showSpellingList('list_croc_tea')">
@@ -959,6 +959,30 @@
         <div class="mode-desc">10 test words — practice now!</div>
       </div>
       <div class="test-badge">📅 Mon<br>11 May</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_baby_sister')" style="margin-top:10px">
+      <span class="mode-icon">👶</span>
+      <div>
+        <div class="mode-label">Spelling 5: 13 July<br>Unit 9: When My Baby Sister Came Home</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>13 Jul</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_mid_autumn')" style="margin-top:10px">
+      <span class="mode-icon">🏮</span>
+      <div>
+        <div class="mode-label">Spelling 6: 27 July<br>Unit 10: Mid-Autumn Festival</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>27 Jul</div>
+    </div>
+    <div class="mode-card full-width" onclick="showSpellingList('list_hari_raya')" style="margin-top:10px">
+      <span class="mode-icon">🌙</span>
+      <div>
+        <div class="mode-label">Spelling 7: 17 Aug<br>Unit 11: The First Day of Hari Raya</div>
+        <div class="mode-desc">10 test words — practice now!</div>
+      </div>
+      <div class="test-badge">📅 Mon<br>17 Aug</div>
     </div>
   </div>
 
@@ -1564,6 +1588,57 @@ const spellingLists = {
       { word: "visit",     category: "First Day of Hari Raya 🌙", syllables: "vis-it",     hint: "Two parts: <span class='letter-highlight'>VIS</span> + <span class='letter-highlight'>IT</span>. Short <span class='letter-highlight'>I</span> sound in both parts!" },
       { word: "pineapple", category: "First Day of Hari Raya 🌙", syllables: "pine-ap-ple", hint: "Three parts: <span class='letter-highlight'>PINE</span> + <span class='letter-highlight'>AP</span> + <span class='letter-highlight'>PLE</span>. Magic E in PINE, double <span class='letter-highlight'>PP</span> in APPLE!" },
       { word: "widely",    category: "First Day of Hari Raya 🌙", syllables: "wide-ly",    hint: "Two parts: <span class='letter-highlight'>WIDE</span> + <span class='letter-highlight'>LY</span>. Magic <span class='letter-highlight'>E</span> makes the I say its name!" },
+    ]
+  },
+
+  list_lazy_duck: {
+    title: '🦆 Unit 12: Lazy Duck',
+    date: 'Mon 21 Sep',
+    words: [
+      { word: "beetles",   category: "Lazy Duck 🦆", syllables: "bee-tles",  hint: "Two parts: <span class='letter-highlight'>BEE</span> + <span class='letter-highlight'>TLES</span>. Double <span class='letter-highlight'>EE</span> makes a long 'ee' sound!" },
+      { word: "farmyard",  category: "Lazy Duck 🦆", syllables: "farm-yard", hint: "Two parts: <span class='letter-highlight'>FARM</span> + <span class='letter-highlight'>YARD</span>. <span class='letter-highlight'>AR</span> makes the same sound in both!" },
+      { word: "waddled",   category: "Lazy Duck 🦆", syllables: "wad-dled",  hint: "Two parts: <span class='letter-highlight'>WAD</span> + <span class='letter-highlight'>DLED</span>. Double <span class='letter-highlight'>DD</span> in the middle!" },
+      { word: "hoes",      category: "Lazy Duck 🦆", syllables: "hoes",      hint: "<span class='letter-highlight'>OE</span> makes a long 'o' sound — like in toe and foe! Just add S for more than one." },
+      { word: "weeds",     category: "Lazy Duck 🦆", syllables: "weeds",     hint: "Double <span class='letter-highlight'>EE</span> makes a long 'ee' sound. Add <span class='letter-highlight'>S</span> for more than one weed!" },
+      { word: "thistles",  category: "Lazy Duck 🦆", syllables: "this-tles", hint: "Two parts: <span class='letter-highlight'>THIS</span> + <span class='letter-highlight'>TLES</span>. Tricky! The middle <span class='letter-highlight'>T</span> is silent!" },
+      { word: "scraped",   category: "Lazy Duck 🦆", syllables: "scraped",   hint: "Starts with the <span class='letter-highlight'>SCR</span> blend — three letters, one sound! Magic E makes the A say its name." },
+      { word: "prowled",   category: "Lazy Duck 🦆", syllables: "prowled",   hint: "Starts with <span class='letter-highlight'>PR</span> blend. <span class='letter-highlight'>OWL</span> says 'owl' — add <span class='letter-highlight'>ED</span> for something that already happened!" },
+      { word: "scratched", category: "Lazy Duck 🦆", syllables: "scratched", hint: "Starts with <span class='letter-highlight'>SCR</span> blend. <span class='letter-highlight'>TCH</span> makes a 'ch' sound — like in catch!" },
+      { word: "watched",   category: "Lazy Duck 🦆", syllables: "watched",   hint: "<span class='letter-highlight'>WA</span> sounds like 'wo', not 'wa'! <span class='letter-highlight'>TCH</span> makes a 'ch' sound at the end." },
+    ]
+  },
+
+  list_kings_cake: {
+    title: "🎂 Unit 13: The King's Cake",
+    date: 'Mon 5 Oct',
+    words: [
+      { word: "huffed and puffed",  category: "The King's Cake 🎂", syllables: "huffed and puffed",  hint: "Three words — remember the spaces! Both huffed and puffed have double <span class='letter-highlight'>FF</span>. Means breathing hard!" },
+      { word: "squirted",           category: "The King's Cake 🎂", syllables: "squirt-ed",          hint: "Starts with <span class='letter-highlight'>SQU</span> — S plus QU together! <span class='letter-highlight'>IR</span> says 'er', like in bird and shirt!" },
+      { word: "waggled his head",   category: "The King's Cake 🎂", syllables: "waggled his head",   hint: "Three words — remember the spaces! <span class='letter-highlight'>WAG</span> + <span class='letter-highlight'>GLED</span>, with double <span class='letter-highlight'>GG</span> in the middle." },
+      { word: "furrowed his brows", category: "The King's Cake 🎂", syllables: "furrowed his brows", hint: "Three words — remember the spaces! Double <span class='letter-highlight'>RR</span> in furrowed. <span class='letter-highlight'>BR</span> blend to start brows!" },
+      { word: "gritted his teeth",  category: "The King's Cake 🎂", syllables: "gritted his teeth",  hint: "Three words — remember the spaces! Double <span class='letter-highlight'>TT</span> in gritted. Double <span class='letter-highlight'>EE</span> in teeth!" },
+      { word: "flailed his arms",   category: "The King's Cake 🎂", syllables: "flailed his arms",   hint: "Three words — remember the spaces! Starts with <span class='letter-highlight'>FL</span> blend. <span class='letter-highlight'>AI</span> makes a long 'ay' sound in flailed!" },
+      { word: "cradled",            category: "The King's Cake 🎂", syllables: "cra-dled",           hint: "Two parts: <span class='letter-highlight'>CRA</span> + <span class='letter-highlight'>DLED</span>. Starts with <span class='letter-highlight'>CR</span> blend. Magic E makes the A say its name!" },
+      { word: "gardener",           category: "The King's Cake 🎂", syllables: "gar-den-er",         hint: "Three parts: <span class='letter-highlight'>GAR</span> + <span class='letter-highlight'>DEN</span> + <span class='letter-highlight'>ER</span>. <span class='letter-highlight'>AR</span> makes a broad 'ar' sound!" },
+      { word: "his face went red",  category: "The King's Cake 🎂", syllables: "his face went red",  hint: "Four words — remember the spaces! Magic <span class='letter-highlight'>E</span> in face makes the A say its name. Means feeling embarrassed!" },
+      { word: "soup",               category: "The King's Cake 🎂", syllables: "soup",               hint: "<span class='letter-highlight'>OU</span> makes an 'oo' sound here — like in soup!" },
+    ]
+  },
+
+  list_broken_bangle: {
+    title: '💍 Unit 14: The Broken Bangle',
+    date: 'Mon 19 Oct',
+    words: [
+      { word: "bangle",    category: "The Broken Bangle 💍", syllables: "ban-gle",     hint: "Two parts: <span class='letter-highlight'>BAN</span> + <span class='letter-highlight'>GLE</span>. Short 'a' sound in the first part!" },
+      { word: "beautiful", category: "The Broken Bangle 💍", syllables: "beau-ti-ful", hint: "Tricky! Three parts: <span class='letter-highlight'>BEAU</span> + <span class='letter-highlight'>TI</span> + <span class='letter-highlight'>FUL</span>. <span class='letter-highlight'>EAU</span> makes a 'yoo' sound!" },
+      { word: "slipped",   category: "The Broken Bangle 💍", syllables: "slipped",     hint: "Starts with <span class='letter-highlight'>SL</span> blend. Double <span class='letter-highlight'>PP</span> keeps the short 'i' sound short!" },
+      { word: "broken",    category: "The Broken Bangle 💍", syllables: "bro-ken",     hint: "Two parts: <span class='letter-highlight'>BRO</span> + <span class='letter-highlight'>KEN</span>. Starts with <span class='letter-highlight'>BR</span> blend. Long 'o' sound in the first part!" },
+      { word: "truth",     category: "The Broken Bangle 💍", syllables: "truth",       hint: "Starts with <span class='letter-highlight'>TR</span> blend. The <span class='letter-highlight'>U</span> makes a long 'oo' sound. Ends with <span class='letter-highlight'>TH</span>!" },
+      { word: "crunchy",   category: "The Broken Bangle 💍", syllables: "crun-chy",    hint: "Two parts: <span class='letter-highlight'>CRUN</span> + <span class='letter-highlight'>CHY</span>. Starts with <span class='letter-highlight'>CR</span> blend. <span class='letter-highlight'>Y</span> at the end says 'ee'!" },
+      { word: "dipped",    category: "The Broken Bangle 💍", syllables: "dipped",      hint: "Short <span class='letter-highlight'>I</span> in the middle. Double <span class='letter-highlight'>PP</span> before adding <span class='letter-highlight'>ED</span>!" },
+      { word: "golden",    category: "The Broken Bangle 💍", syllables: "gol-den",     hint: "Two parts: <span class='letter-highlight'>GOL</span> + <span class='letter-highlight'>DEN</span>. Long 'o' sound at the start, like in gold!" },
+      { word: "dangly",    category: "The Broken Bangle 💍", syllables: "dan-gly",     hint: "Two parts: <span class='letter-highlight'>DAN</span> + <span class='letter-highlight'>GLY</span>. Short 'a' sound. <span class='letter-highlight'>Y</span> at the end says 'ee'!" },
+      { word: "brighter",  category: "The Broken Bangle 💍", syllables: "bright-er",   hint: "Two parts: <span class='letter-highlight'>BRIGHT</span> + <span class='letter-highlight'>ER</span>. Tricky! <span class='letter-highlight'>IGH</span> says a long 'i' sound — the GH is silent!" },
     ]
   }
 };
@@ -2441,4 +2516,51 @@ if (userName) {
   };
   const blob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
   const url = URL.createObjectURL(blob);
-  document.getElementById('pwaMan
+  document.getElementById('pwaManifest').setAttribute('href', url);
+})();
+
+// ========== PWA: SERVICE WORKER (offline support) ==========
+if ('serviceWorker' in navigator) {
+  // Inline the service worker as a blob so no separate file is needed
+  const swCode = `
+const CACHE = 'spelling-adventure-v1';
+const OFFLINE_URL = self.location.href;
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.add(OFFLINE_URL))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(OFFLINE_URL))
+    );
+  } else {
+    e.respondWith(
+      caches.match(e.request).then(r => r || fetch(e.request))
+    );
+  }
+});
+  `;
+  const swBlob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl, {scope: './'}
+  ).then(() => console.log('SW registered')
+  ).catch(e => console.log('SW error:', e));
+}
+
+</script>
+</body>
+</html>
